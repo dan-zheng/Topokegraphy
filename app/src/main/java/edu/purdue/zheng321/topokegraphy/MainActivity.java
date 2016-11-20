@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
 	private HapticMaterial mHapticMaterial;
 	private HapticSprite mHapticSprite;
 
+	// ImageView for topographic map
 	private ImageView map;
 
 	private boolean isTopographyShown;
@@ -33,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		// Init haptics
+
+		// Initialize haptics
 		initHaptics();
 
 		map = (ImageView) findViewById(R.id.map);
@@ -112,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
 	public void buttonPress(View v) {
 		switch (v.getId()) {
-			case R.id.toggleButton:
+			case R.id.toggleButton: {
 				// do something
 				if (!isTopographyShown) {
 					map.setImageResource(R.drawable.texture2);
@@ -122,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
 				}
 				isTopographyShown = !isTopographyShown;
 				break;
+			}
 		}
 	}
 }

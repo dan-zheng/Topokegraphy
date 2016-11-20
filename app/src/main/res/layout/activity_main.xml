@@ -17,39 +17,39 @@
         android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/imageView4"
+            android:id="@+id/option1"
             android:layout_width="match_parent"
             android:layout_height="@dimen/option_height"
             app:srcCompat="@color/colorPrimary" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/label1"
             android:layout_width="match_parent"
             android:layout_height="@dimen/label_height"
             android:text="A"
             android:textAlignment="center" />
 
         <ImageView
-            android:id="@+id/imageView3"
+            android:id="@+id/option2"
             android:layout_width="match_parent"
             android:layout_height="@dimen/option_height"
             app:srcCompat="@color/colorPrimary" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/label2"
             android:layout_width="match_parent"
             android:layout_height="@dimen/label_height"
             android:text="B"
             android:textAlignment="center" />
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/option3"
             android:layout_width="match_parent"
             android:layout_height="@dimen/option_height"
             app:srcCompat="@color/colorPrimary" />
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/label3"
             android:layout_width="match_parent"
             android:layout_height="@dimen/label_height"
             android:text="C"
