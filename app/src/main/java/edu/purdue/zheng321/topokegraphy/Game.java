@@ -4,8 +4,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Vibrator;
@@ -25,11 +28,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import co.tanvas.haptics.service.model.HapticMaterial;
+import co.tanvas.haptics.service.model.HapticSprite;
+import co.tanvas.haptics.service.model.HapticTexture;
+import co.tanvas.haptics.service.model.HapticView;
+
+import static android.content.ContentValues.TAG;
+
 public class Game {
     // Button for submitting guess
     Button submitGuess;
     // List of ImageView guess options
     List<ImageButton> options;
+    // List of texture resource ids
+    List<Integer> textures;
+    // List of location image resource ids
+    List<Integer> locations;
     // Spinner for game mode
     Spinner spinner;
     // Audio players
@@ -39,6 +53,11 @@ public class Game {
     // Context
     Context context;
 
+    private HapticView mHapticView;
+    private HapticTexture mHapticTexture;
+    private HapticMaterial mHapticMaterial;
+    private HapticSprite mHapticSprite;
+
     // Game score
     int score;
 
@@ -46,7 +65,9 @@ public class Game {
      * Constructor. Initializes the instance variables.
      */
     public Game(Button submitGuess, List<ImageButton> options, Spinner spinner,
-                MediaPlayer[] audio, Vibrator vibrator, Context context) {
+                MediaPlayer[] audio, Vibrator vibrator, HapticView mHapticView,
+                HapticTexture mHapticTexture, HapticMaterial mHapticMaterial,
+                HapticSprite mHapticSprite, Context context) {
         this.submitGuess = submitGuess;
         this.options = options;
         this.spinner = spinner;
@@ -54,13 +75,35 @@ public class Game {
         this.vibrator = vibrator;
         this.context = context;
         this.score = 0;
+
+        this.mHapticView = mHapticView;
+        this.mHapticTexture = mHapticTexture;
+        this.mHapticMaterial = mHapticMaterial;
+        this.mHapticSprite = mHapticSprite;
     }
 
-    public Game(Button submitGuess, List<ImageButton> options, Context context) {
+    public Game(Button submitGuess, List<ImageButton> options, HapticView mHapticView,
+                HapticTexture mHapticTexture, HapticMaterial mHapticMaterial,
+                HapticSprite mHapticSprite, Context context) {
         this.submitGuess = submitGuess;
         this.options = options;
         this.context = context;
         this.score = 0;
+
+        this.mHapticView = mHapticView;
+        this.mHapticTexture = mHapticTexture;
+        this.mHapticMaterial = mHapticMaterial;
+        this.mHapticSprite = mHapticSprite;
+
+        this.locations = new ArrayList<>();
+        locations.add(R.drawable.location1);
+        locations.add(R.drawable.location2);
+        locations.add(R.drawable.location3);
+
+        this.textures = new ArrayList<>();
+        textures.add(R.drawable.texture1);
+        textures.add(R.drawable.texture2);
+        textures.add(R.drawable.texture3);
     }
 
 /*
@@ -188,4 +231,6 @@ public class Game {
         audio[1].seekTo(0);
         audio[1].start();
     }*/
+
+
 }
