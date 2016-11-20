@@ -7,4 +7,5 @@ package edu.purdue.zheng321.topokegraphy;
 public interface GameInterface {
     public void disableButtons();
     public void gameOver();
+
 }
