@@ -50,7 +50,6 @@ public class Game {
         this.submitGuess = submitGuess;
         this.options = options;
         this.spinner = spinner;
-        this.gameMode = gameMode;
         this.audio = audio;
         this.vibrator = vibrator;
         this.context = context;
