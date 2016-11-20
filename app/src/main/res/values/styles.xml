@@ -8,7 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!--
     <style name="splashScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">@drawable/texture2_photo</item>
+        <item name="android:windowBackground">@drawable/location2</item>
     </style>
+    -->
 </resources>

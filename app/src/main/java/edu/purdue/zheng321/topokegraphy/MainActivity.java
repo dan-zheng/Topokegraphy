@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +25,8 @@ import java.util.Random;
 
 import co.tanvas.haptics.service.app.*;
 import co.tanvas.haptics.service.adapter.*;
+import co.tanvas.haptics.service.err.HapticServiceAdapterException;
+import co.tanvas.haptics.service.err.NativeHapticObjectException;
 import co.tanvas.haptics.service.model.*;
 import co.tanvas.haptics.service.util.Log;
 
@@ -42,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     // Random number generator
     Random rand;
 
+    // Guess selection buttons
+    ImageButton[] guessButtons;
     // Button for submitting guess
     Button submitGuess;
     // List of ImageView guess options
@@ -64,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
     Context context;
     // ImageView for topographic map
     private ImageView map;
+    // Player score
+    int score;
 
     private boolean isTopographyShown;
 
@@ -76,6 +83,10 @@ public class MainActivity extends AppCompatActivity {
         initHaptics();
 
         submitGuess = (Button) findViewById(R.id.submitGuess);
+        guessButtons = new ImageButton[3];
+        guessButtons[0] = (ImageButton) findViewById(R.id.option1);
+        guessButtons[1] = (ImageButton) findViewById(R.id.option2);
+        guessButtons[2] = (ImageButton) findViewById(R.id.option3);
         map = (ImageView) findViewById(R.id.map);
         options = new ArrayList<>();
         options.add((ImageButton) findViewById(R.id.option1));
@@ -83,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         options.add((ImageButton) findViewById(R.id.option3));
 
         this.locations = new LinkedList<>();
+        this.oldLocations = new LinkedList<>();
         locations.add(R.drawable.location1);
         locations.add(R.drawable.location2);
         locations.add(R.drawable.location3);
@@ -102,9 +114,13 @@ public class MainActivity extends AppCompatActivity {
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         isTopographyShown = false;
+
+        score = 0;
+
+        setNewLevel();
     }
 
-    public void initHaptics() {
+    /*public void initHaptics() {
         try {
             // Get the service adapter
             serviceAdapter = HapticApplication.getHapticServiceAdapter();
@@ -137,6 +153,31 @@ public class MainActivity extends AppCompatActivity {
             mHapticSprite.setMaterial(mHapticMaterial);
             // Add the haptic sprite to the haptic view
             mHapticView.addSprite(mHapticSprite);
+        } catch (Exception e) {
+            //Log.e(null, e.toString());
+            e.printStackTrace();
+        }
+    }*/
+
+    public void initHaptics() {
+        try {
+            // Get the service adapter
+            serviceAdapter = HapticApplication.getHapticServiceAdapter();
+            // Create a haptic view and activate it
+            if (mHapticView == null) {
+                mHapticView = HapticView.create(serviceAdapter);
+                mHapticView.activate();
+            }
+            // Set the orientation of the haptic view
+            Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+            int rotation = display.getRotation();
+            HapticView.Orientation orientation = HapticView.getOrientationFromAndroidDisplayRotation(rotation);
+
+            mHapticView.setOrientation(orientation);
+            if (mHapticTexture == null) {
+                // Create a haptic texture with the retrieved texture data
+                mHapticTexture = HapticTexture.create(serviceAdapter);
+            }
         } catch (Exception e) {
             //Log.e(null, e.toString());
             e.printStackTrace();
@@ -174,53 +215,75 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonPress(View v) {
-        switch (v.getId()) {
-            case R.id.submitGuess: {
-                /*
-                if (!isTopographyShown) {
-                    map.setImageResource(R.drawable.texture2);
-                } else {
-                    map.setImageResource(0);
-                    map.setBackgroundColor(Color.parseColor("#000000"));
+        int id = v.getId();
+        if (id == R.id.option1 || id == R.id.option2 || id == R.id.option3) {
+            if (answer == id) {
+                Toast.makeText(MainActivity.this, "Correct answer! :D", Toast.LENGTH_SHORT).show();
+                System.out.println("YO GOOD");
+                score++;
+            } else {
+                Toast.makeText(MainActivity.this, "Incorrect answer. :(", Toast.LENGTH_SHORT).show();
+                System.out.printf("Fail. id: %d,  ");
+            }
+            setNewLevel();
+        } else {
+            switch (v.getId()) {
+                case R.id.submitGuess: {
+                    if (!isTopographyShown) {
+                        map.setImageResource(answer);
+                    } else {
+                        map.setImageResource(0);
+                        map.setBackgroundColor(Color.parseColor("#000000"));
+                    }
+                    isTopographyShown = !isTopographyShown;
+                    break;
                 }
-                isTopographyShown = !isTopographyShown;
-                */
-                
-                break;
             }
         }
     }
 
     public void setNewLevel() {
+        if (mHapticView != null && mHapticSprite != null) {
+            try {
+                mHapticView.removeSprite(mHapticSprite);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            mHapticSprite = null;
+        }
         LinkedList<Integer> temp = new LinkedList<>();
         for (int i = 0; i < MAX_OPTIONS; i++) {
             if (locations.size() == 0) {
                 locations.addAll(oldLocations);
                 oldLocations.clear();
-                Collections.sort(locations);
+                Collections.shuffle(locations);
             }
             Integer removedLocation = locations.remove(0);
             temp.add(removedLocation);
         }
+        System.out.println("temp.toString() = " + temp.toString());
+        System.out.println("oldLocations.toString() = " + oldLocations.toString());
         options.get(0).setImageResource(temp.get(0));
         options.get(1).setImageResource(temp.get(1));
         options.get(2).setImageResource(temp.get(2));
 
-
         oldLocations.addAll(temp);
         temp.clear();
 
-        answer = rand.nextInt(3);
+        answer = textures[rand.nextInt(3)];
         setHaptics(answer);
+        //Toast.makeText(this, "New level.", Toast.LENGTH_SHORT).show();
     }
 
-    public void setHaptics(Integer input) {
+    public void setHaptics(Integer texture) {
         try {
-            int texture = textures[input];
+            if (mHapticView != null && mHapticSprite != null) {
+                mHapticView.removeSprite(mHapticSprite);
+                mHapticSprite = null;
+            }
+            System.out.println(texture);
             Bitmap hapticBitmap = BitmapFactory.decodeResource(getResources(), texture);
             byte[] textureData = HapticTexture.createTextureDataFromBitmap(hapticBitmap);
-            // Create a haptic texture with the retrieved texture data
-            mHapticTexture = HapticTexture.create(serviceAdapter);
             int textureDataWidth = hapticBitmap.getRowBytes() / 4; // 4 channels, i.e., ARGB
             int textureDataHeight = hapticBitmap.getHeight();
             System.out.printf("width: %d, height: %d\n", textureDataWidth, textureDataHeight);
@@ -235,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
             mHapticSprite.setMaterial(mHapticMaterial);
             // Add the haptic sprite to the haptic view
             mHapticView.addSprite(mHapticSprite);
+            isTopographyShown = false;
         } catch (Exception e) {
             e.printStackTrace();
         }
