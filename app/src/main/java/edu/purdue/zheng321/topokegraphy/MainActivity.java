@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 					map.setImageResource(R.drawable.texture2);
 				} else {
 					map.setImageResource(0);
-					map.setBackgroundColor(Color.parseColor("#FF0000"));
+					map.setBackgroundColor(Color.parseColor("#000000"));
 				}
 				isTopographyShown = !isTopographyShown;
 				break;
