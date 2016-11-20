@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 			mHapticView.setOrientation(orientation);
 			// Retrieve texture data from the bitmap
 			Bitmap hapticBitmap = BitmapFactory.decodeResource(getResources(),
-					R.drawable.noise_texture);
+					R.drawable.texture2);
 			byte[] textureData = HapticTexture.createTextureDataFromBitmap(hapticBitmap);
 			// Create a haptic texture with the retrieved texture data
 			mHapticTexture = HapticTexture.create(serviceAdapter);
