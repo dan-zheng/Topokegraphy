@@ -3,11 +3,14 @@ package edu.purdue.zheng321.topokegraphy;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import co.tanvas.haptics.service.app.*;
 import co.tanvas.haptics.service.adapter.*;
@@ -21,12 +24,20 @@ public class MainActivity extends AppCompatActivity {
 	private HapticMaterial mHapticMaterial;
 	private HapticSprite mHapticSprite;
 
+	private ImageView map;
+
+	private boolean isTopographyShown;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		// Init haptics
 		initHaptics();
+
+		map = (ImageView) findViewById(R.id.map);
+
+		isTopographyShown = false;
 	}
 
 	public void initHaptics() {
@@ -50,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 			mHapticTexture = HapticTexture.create(serviceAdapter);
 			int textureDataWidth = hapticBitmap.getRowBytes() / 4; // 4 channels, i.e., ARGB
 			int textureDataHeight = hapticBitmap.getHeight();
+			System.out.printf("width: %d, height: %d\n", textureDataWidth, textureDataHeight);
 			mHapticTexture.setSize(textureDataWidth, textureDataHeight);
 			mHapticTexture.setData(textureData);
 			// Create a haptic material with the created haptic texture
@@ -96,5 +108,16 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-
+	public void buttonPress(View v) {
+		switch (v.getId()) {
+			case R.id.toggleButton:
+				// do something
+				if (!isTopographyShown) {
+					map.setImageResource(R.drawable.texture2);
+				} else {
+					map.setBackgroundColor(Color.parseColor("#FF0000"));
+				}
+				break;
+		}
+	}
 }
