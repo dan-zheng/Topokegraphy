@@ -58,13 +58,13 @@ public class MainActivity extends AppCompatActivity {
 		options.add((ImageButton) findViewById(R.id.option2));
 		options.add((ImageButton) findViewById(R.id.option3));
 
-		MediaPlayer audioWin = MediaPlayer.create(MainActivity.this, R.raw.win);
-		MediaPlayer audioTie = MediaPlayer.create(MainActivity.this, R.raw.tie);
-		MediaPlayer[] audio = {audioWin, audioTie};
+		/*MediaPlayer audioWin = MediaPlayer.create(MainActivity.this, R.raw.win);
+		MediaPlayer audioLose = MediaPlayer.create(MainActivity.this, R.raw.lose);
+		MediaPlayer[] audio = {audioWin, audioLose};*/
 
 		Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-		game = new Game(submitGuess, options, spinner, );
+		game = new Game(submitGuess, options, MainActivity.this);
 
 		isTopographyShown = false;
 	}

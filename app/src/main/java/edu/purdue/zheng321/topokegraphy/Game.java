@@ -46,15 +46,21 @@ public class Game {
      * Constructor. Initializes the instance variables.
      */
     public Game(Button submitGuess, List<ImageButton> options, Spinner spinner,
-                MediaPlayer[] audio, Vibrator vibrator, Context context, int score) {
+                MediaPlayer[] audio, Vibrator vibrator, Context context) {
         this.submitGuess = submitGuess;
         this.options = options;
         this.spinner = spinner;
-        this.gameMode = gameMode;
         this.audio = audio;
         this.vibrator = vibrator;
         this.context = context;
-        this.score = score;
+        this.score = 0;
+    }
+
+    public Game(Button submitGuess, List<ImageButton> options, Context context) {
+        this.submitGuess = submitGuess;
+        this.options = options;
+        this.context = context;
+        this.score = 0;
     }
 
 /*
