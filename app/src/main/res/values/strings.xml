@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Topokegraphy</string>
+    <string name="cheatToggleOn">Cheat On</string>
+    <string name="cheatToggleOff">Cheat Off</string>
 </resources>

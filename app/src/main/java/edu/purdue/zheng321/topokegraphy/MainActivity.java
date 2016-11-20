@@ -18,9 +18,12 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,6 +44,9 @@ import static android.content.ContentValues.TAG;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MyActivity";
     private static final int MAX_OPTIONS = 3;
+    private static final String FIRST = "Hill";
+    private static final String SECOND = "Two Hills";
+    private static final String THIRD = "Round Cliff";
 
     private HapticServiceAdapter serviceAdapter;
     private HapticView mHapticView;
@@ -70,8 +76,10 @@ public class MainActivity extends AppCompatActivity {
             R.drawable.texture2,
             R.drawable.texture3
     };
+    int[] tempLocations;
     // Store correct guess
     int answer;
+    int lastAnswer = -1;
     // Spinner for game mode
     Spinner spinner;
     // Audio players
@@ -86,6 +94,9 @@ public class MainActivity extends AppCompatActivity {
     int score;
 
     private boolean isTopographyShown;
+
+    private boolean cheat;
+    ToggleButton cheatButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +128,8 @@ public class MainActivity extends AppCompatActivity {
 
             vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-            isTopographyShown = false;
+            cheat = false;
+            cheatButton = (ToggleButton) findViewById(R.id.cheat);
 
             score = 0;
 
@@ -126,45 +138,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
-    /*public void initHaptics() {
-        try {
-            // Get the service adapter
-            serviceAdapter = HapticApplication.getHapticServiceAdapter();
-            // Create a haptic view and activate it
-            mHapticView = HapticView.create(serviceAdapter);
-            mHapticView.activate();
-            // Set the orientation of the haptic view
-            Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-            int rotation = display.getRotation();
-            HapticView.Orientation orientation = HapticView.getOrientationFromAndroidDisplayRotation(rotation);
-
-            mHapticView.setOrientation(orientation);
-            // Retrieve texture data from the bitmap
-            Bitmap hapticBitmap = BitmapFactory.decodeResource(getResources(),
-                    R.drawable.texture2);
-            byte[] textureData = HapticTexture.createTextureDataFromBitmap(hapticBitmap);
-            // Create a haptic texture with the retrieved texture data
-            mHapticTexture = HapticTexture.create(serviceAdapter);
-            int textureDataWidth = hapticBitmap.getRowBytes() / 4; // 4 channels, i.e., ARGB
-            int textureDataHeight = hapticBitmap.getHeight();
-            System.out.printf("width: %d, height: %d\n", textureDataWidth, textureDataHeight);
-            Log.i(this.getApplicationContext(), TAG, "width: " + textureDataWidth + ", height: " + textureDataHeight);
-            mHapticTexture.setSize(textureDataWidth, textureDataHeight);
-            mHapticTexture.setData(textureData);
-            // Create a haptic material with the created haptic texture
-            mHapticMaterial = HapticMaterial.create(serviceAdapter);
-            mHapticMaterial.setTexture(0, mHapticTexture);
-            // Create a haptic sprite with the haptic material
-            mHapticSprite = HapticSprite.create(serviceAdapter);
-            mHapticSprite.setMaterial(mHapticMaterial);
-            // Add the haptic sprite to the haptic view
-            mHapticView.addSprite(mHapticSprite);
-        } catch (Exception e) {
-            //Log.e(null, e.toString());
-            e.printStackTrace();
-        }
-    }*/
 
     public void initHaptics() {
         try {
@@ -188,9 +161,15 @@ public class MainActivity extends AppCompatActivity {
                 int texture = getResources().getIdentifier(url, "drawable", getPackageName());
                 */
                 int texture = 0;
-                if (i == 0) { texture = R.drawable.texture1; }
-                if (i == 1) { texture = R.drawable.texture2; }
-                if (i == 2) { texture = R.drawable.texture3; }
+                if (i == 0) {
+                    texture = R.drawable.texture1;
+                }
+                if (i == 1) {
+                    texture = R.drawable.texture2;
+                }
+                if (i == 2) {
+                    texture = R.drawable.texture3;
+                }
 
                 Bitmap hapticBitmap = BitmapFactory.decodeResource(getResources(), texture);
                 byte[] textureData = HapticTexture.createTextureDataFromBitmap(hapticBitmap);
@@ -249,20 +228,23 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.option1 || id == R.id.option2 || id == R.id.option3) {
             int compare = -1;
             if (id == R.id.option1) {
-                compare = 0;
+                compare = tempLocations[0];
             }
             if (id == R.id.option2) {
-                compare = 1;
+                compare = tempLocations[1];
             }
             if (id == R.id.option3) {
-                compare = 2;
+                compare = tempLocations[2];
             }
             if (answer == compare) {
                 score++;
-                Toast.makeText(MainActivity.this, "Correct answer! :D Score = " + score, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Correct answer! :D Score = " + score, Toast.LENGTH_SHORT).show();
+                vibrator.vibrate(500);
                 System.out.println("Success. compare: " + compare + ", answer: " + answer);
+                successDialog();
             } else {
-                Toast.makeText(MainActivity.this, "Incorrect answer. :(", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Incorrect answer. :(", Toast.LENGTH_SHORT).show();
+                vibrator.vibrate(100);
                 System.out.println("Fail. compare: " + compare + ", answer: " + answer);
                 failDialog();
             }
@@ -274,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
                         map.setImageResource(textures[answer]);
                     } else {
                         map.setImageResource(0);
-                        map.setBackgroundColor(Color.parseColor("#000000"));
+                        map.setBackgroundColor(Color.parseColor("#222222"));
                     }
                     isTopographyShown = !isTopographyShown;
                     break;
@@ -286,26 +268,39 @@ public class MainActivity extends AppCompatActivity {
     public void setNewLevel() {
         int[] options = getThreeRandom();
         ImageButton imageButton = null;
+        TextView label = null;
 
         for (int i = 0; i < options.length; i++) {
             if (i == 0) {
                 imageButton = (ImageButton) findViewById(R.id.option1);
-                imageButton.setImageResource(locations[options[i]]);
+                label = (TextView) findViewById(R.id.label1);
             } else if (i == 1) {
                 imageButton = (ImageButton) findViewById(R.id.option2);
-                imageButton.setImageResource(locations[options[i]]);
+                label = (TextView) findViewById(R.id.label2);
             } else if (i == 2) {
                 imageButton = (ImageButton) findViewById(R.id.option3);
-                imageButton.setImageResource(locations[options[i]]);
+                label = (TextView) findViewById(R.id.label3);
             }
+            imageButton.setImageResource(locations[options[i]]);
+            label.setText(getLabel(options[i]));
             //imageButton.setImageResource(0);
         }
-
-        int texture = rand.nextInt(3);
-        answer = texture;
+        lastAnswer = answer;
+        do {
+            answer = options[rand.nextInt(3)];
+        } while (answer == lastAnswer);
         System.out.println("answer = " + answer);
         setHaptics(answer);
-        map.setImageResource(textures[answer]);
+
+        System.out.println("cheatButton: " + cheatButton.isChecked());
+        if (!cheatButton.isChecked()) {
+            map.setImageResource(R.drawable.hidden);
+            map.setBackgroundColor(Color.parseColor("#222222"));
+            isTopographyShown = false;
+        } else {
+            map.setImageResource(textures[answer]);
+            isTopographyShown = true;
+        }
         //Toast.makeText(this, "New level.", Toast.LENGTH_SHORT).show();
     }
 
@@ -320,16 +315,51 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public int[] getThreeRandom() {
-        final Set<Integer> intSet = new HashSet<>();
+        /*final Set<Integer> intSet = new HashSet<>();
         while (intSet.size() < 3) {
             intSet.add(rand.nextInt(MAX_OPTIONS));
         }
-        final int[] ints = new int[intSet.size()];
+        int[] ints = new int[intSet.size()];
         final Iterator<Integer> iter = intSet.iterator();
         for (int i = 0; iter.hasNext(); ++i) {
             ints[i] = iter.next();
+        }*/
+        List<Integer> list = Arrays.asList(0, 1, 2);
+        Collections.shuffle(list);
+        int[] ints = new int[list.size()];
+        final Iterator<Integer> iter = list.iterator();
+        for (int i = 0; iter.hasNext(); ++i) {
+            ints[i] = iter.next();
         }
+        tempLocations = ints;
         return ints;
+    }
+
+    public String getLabel(int n) {
+        if (n == 0) {
+            return FIRST;
+        } else if (n == 1) {
+            return SECOND;
+        } else if (n == 2) {
+            return THIRD;
+        }
+        return null;
+    }
+
+    public void successDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        LayoutInflater factory = LayoutInflater.from(MainActivity.this);
+        final ImageView imageView = (ImageView) factory.inflate(R.layout.imageview, null);
+        imageView.setImageResource(locations[answer]);
+        builder.setView(imageView);
+        builder.setTitle("Correct answer! Your score is " + score + ".")
+                .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                });
+        builder.show();
     }
 
     public void failDialog() {
@@ -339,13 +369,7 @@ public class MainActivity extends AppCompatActivity {
         imageView.setImageResource(locations[answer]);
         builder.setView(imageView);
         builder.setTitle("Wrong answer. :( Here was the correct option.")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
 
