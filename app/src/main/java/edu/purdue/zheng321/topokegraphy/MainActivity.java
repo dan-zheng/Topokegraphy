@@ -18,6 +18,7 @@ import co.tanvas.haptics.service.model.*;
 import co.tanvas.haptics.service.util.Log;
 
 public class MainActivity extends AppCompatActivity {
+	private static final String TAG = "MyActivity";
 
 	private HapticView mHapticView;
 	private HapticTexture mHapticTexture;
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
 			int textureDataWidth = hapticBitmap.getRowBytes() / 4; // 4 channels, i.e., ARGB
 			int textureDataHeight = hapticBitmap.getHeight();
 			System.out.printf("width: %d, height: %d\n", textureDataWidth, textureDataHeight);
+			Log.i(this.getApplicationContext(), TAG, "width: " + textureDataWidth + ", height: " + textureDataHeight);
 			mHapticTexture.setSize(textureDataWidth, textureDataHeight);
 			mHapticTexture.setData(textureData);
 			// Create a haptic material with the created haptic texture
@@ -85,10 +87,10 @@ public class MainActivity extends AppCompatActivity {
 		if (hasFocus) {
 			try {
 				// Set the size and position of the haptic sprite to correspond to the view we created
-				View view = findViewById(R.id.view);
+				View map = findViewById(R.id.map);
 				int[] location = new int[2];
-				view.getLocationOnScreen(location);
-				mHapticSprite.setSize(view.getWidth(), view.getHeight());
+				map.getLocationOnScreen(location);
+				mHapticSprite.setSize(map.getWidth(), map.getHeight());
 				mHapticSprite.setPosition(location[0], location[1]);
 			} catch (Exception e) {
 				//Log.e(null, e.toString());
@@ -115,8 +117,10 @@ public class MainActivity extends AppCompatActivity {
 				if (!isTopographyShown) {
 					map.setImageResource(R.drawable.texture2);
 				} else {
+					map.setImageResource(0);
 					map.setBackgroundColor(Color.parseColor("#FF0000"));
 				}
+				isTopographyShown = !isTopographyShown;
 				break;
 		}
 	}
