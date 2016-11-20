@@ -32,8 +32,6 @@ public class Game {
     List<ImageButton> options;
     // Spinner for game mode
     Spinner spinner;
-    // Game mode
-    TextView gameMode;
     // Audio players
     MediaPlayer[] audio;
     // Vibrator
@@ -47,7 +45,7 @@ public class Game {
     /**
      * Constructor. Initializes the instance variables.
      */
-    public Game(Button submitGuess, List<ImageButton> options, Spinner spinner, TextView gameMode,
+    public Game(Button submitGuess, List<ImageButton> options, Spinner spinner,
                 MediaPlayer[] audio, Vibrator vibrator, Context context, int score) {
         this.submitGuess = submitGuess;
         this.options = options;

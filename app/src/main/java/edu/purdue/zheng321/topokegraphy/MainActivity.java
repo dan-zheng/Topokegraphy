@@ -4,13 +4,20 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import co.tanvas.haptics.service.app.*;
 import co.tanvas.haptics.service.adapter.*;
@@ -25,6 +32,12 @@ public class MainActivity extends AppCompatActivity {
 	private HapticMaterial mHapticMaterial;
 	private HapticSprite mHapticSprite;
 
+	// Game model
+	private Game game;
+	// Button for submitting guess
+	Button submitGuess;
+	// Spinner for selecting game mode
+	Spinner spinner;
 	// ImageView for topographic map
 	private ImageView map;
 
@@ -38,7 +51,20 @@ public class MainActivity extends AppCompatActivity {
 		// Initialize haptics
 		initHaptics();
 
+		submitGuess = (Button) findViewById(R.id.submitGuess);
 		map = (ImageView) findViewById(R.id.map);
+		List<ImageButton> options = new ArrayList<>();
+		options.add((ImageButton) findViewById(R.id.option1));
+		options.add((ImageButton) findViewById(R.id.option2));
+		options.add((ImageButton) findViewById(R.id.option3));
+
+		MediaPlayer audioWin = MediaPlayer.create(MainActivity.this, R.raw.win);
+		MediaPlayer audioTie = MediaPlayer.create(MainActivity.this, R.raw.tie);
+		MediaPlayer[] audio = {audioWin, audioTie};
+
+		Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+		game = new Game(submitGuess, options, spinner, );
 
 		isTopographyShown = false;
 	}
