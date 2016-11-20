@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		setTheme(R.style.splashScreenTheme);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
 	public void buttonPress(View v) {
 		switch (v.getId()) {
-			case R.id.toggleButton: {
+			case R.id.submitGuess: {
 				// do something
 				if (!isTopographyShown) {
 					map.setImageResource(R.drawable.texture2);
